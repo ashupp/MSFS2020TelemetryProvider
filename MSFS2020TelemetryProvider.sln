@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29424.173
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSFS2020TelemetryProvider", "MSFS2020TelemetryProvider.csproj", "{CF4512C8-D007-420B-A50B-9B645D9BC817}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CF4512C8-D007-420B-A50B-9B645D9BC817}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF4512C8-D007-420B-A50B-9B645D9BC817}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF4512C8-D007-420B-A50B-9B645D9BC817}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CF4512C8-D007-420B-A50B-9B645D9BC817}.Debug|x64.Build.0 = Debug|Any CPU
+		{CF4512C8-D007-420B-A50B-9B645D9BC817}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF4512C8-D007-420B-A50B-9B645D9BC817}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF4512C8-D007-420B-A50B-9B645D9BC817}.Release|x64.ActiveCfg = Release|Any CPU
+		{CF4512C8-D007-420B-A50B-9B645D9BC817}.Release|x64.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A177A721-F81F-42C9-BE0C-19F0798D8CF0}
+	EndGlobalSection
+EndGlobal
