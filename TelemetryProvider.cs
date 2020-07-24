@@ -197,7 +197,7 @@ namespace SimFeedback.telemetry
             simconnect.AddToDataDefinition(DEFINITIONS.AircraftData,
                 "ESTIMATED CRUISE SPEED",
                 "Knots",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
@@ -226,150 +226,150 @@ namespace SimFeedback.telemetry
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "PLANE LATITUDE",
                 "Degrees",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "PLANE LONGITUDE",
                 "Degrees",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "PLANE ALTITUDE",
                 "Feet",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "PLANE ALT ABOVE GROUND",
                 "Feet",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "ACCELERATION BODY X",
                 "Feet per second squared",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "ACCELERATION BODY Y",
                 "Feet per second squared",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "ACCELERATION BODY Z",
                 "Feet per second squared",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "ROTATION VELOCITY BODY X",
                 "Feet per second",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "ROTATION VELOCITY BODY Y",
                 "Feet per second",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "ROTATION VELOCITY BODY Z",
                 "Feet per second",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "PLANE PITCH DEGREES",
                 "Radians",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "PLANE BANK DEGREES",
                 "Radians",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "PLANE HEADING DEGREES TRUE",
                 "Degrees",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "PLANE HEADING DEGREES MAGNETIC",
                 "Degrees",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "GROUND ALTITUDE",
                 "Meters",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "GROUND VELOCITY",
                 "Knots",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "AIRSPEED INDICATED",
                 "Knots",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "VERTICAL SPEED",
                 "Feet per minute",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "FUEL TOTAL QUANTITY",
                 "Gallons",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "AMBIENT WIND VELOCITY",
                 "Feet per second",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "AMBIENT WIND DIRECTION",
                 "Degrees",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
             simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                 "GENERAL ENG RPM:1",
                 "Degrees",
-                SIMCONNECT_DATATYPE.FLOAT64,
+                SIMCONNECT_DATATYPE.FLOAT32,
                 0.0f,
                 SimConnect.SIMCONNECT_UNUSED);
 
@@ -448,9 +448,9 @@ namespace SimFeedback.telemetry
                                     Surge = (float)flightStatus.Value.zAccel,
                                     Sway = (float)flightStatus.Value.xAccel,
                                     Heave = (float)flightStatus.Value.yAccel,
-                                    RollSpeed = (float)flightStatus.Value.xVelocity,
+                                    RollSpeed = (float)flightStatus.Value.zVelocity,
                                     YawSpeed = (float)flightStatus.Value.yVelocity,
-                                    PitchSpeed = (float)flightStatus.Value.zVelocity,
+                                    PitchSpeed = (float)flightStatus.Value.xVelocity,
                                     Speed = (float)flightStatus.Value.GroundSpeed,
                                     RPM = (float)flightStatus.Value.RPM
                                 };
