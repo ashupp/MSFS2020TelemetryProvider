@@ -46,31 +46,31 @@ namespace SimFeedback.telemetry
         //public float SimTime;
         public int SimRate;
 
-        public double Latitude;
-        public double Longitude;
-        public double Altitude;
-        public double AltitudeAboveGround;
-        public double xAccel;
-        public double yAccel;
-        public double zAccel;
-        public double xVelocity;
-        public double yVelocity;
-        public double zVelocity;
-        public double Pitch;
-        public double Bank;
-        public double Yaw;
-        public double MagneticHeading;
-        public double GroundAltitude;
-        public double GroundSpeed;
-        public double IndicatedAirSpeed;
-        public double VerticalSpeed;
+        public float Latitude;
+        public float Longitude;
+        public float Altitude;
+        public float AltitudeAboveGround;
+        public float xAccel;
+        public float yAccel;
+        public float zAccel;
+        public float xVelocity;
+        public float yVelocity;
+        public float zVelocity;
+        public float Pitch;
+        public float Bank;
+        public float Yaw;
+        public float MagneticHeading;
+        public float GroundAltitude;
+        public float GroundSpeed;
+        public float IndicatedAirSpeed;
+        public float VerticalSpeed;
 
-        public double FuelTotalQuantity;
+        public float FuelTotalQuantity;
 
-        public double WindVelocity;
-        public double WindDirection;
+        public float WindVelocity;
+        public float WindDirection;
 
-        public double RPM;
+        public float RPM;
 
         public int IsOnGround;
         public int StallWarning;

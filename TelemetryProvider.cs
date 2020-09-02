@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
@@ -11,6 +12,8 @@ namespace SimFeedback.telemetry
     public sealed class TelemetryProvider : AbstractTelemetryProvider
     {
         private bool _isStopped = true;
+        private bool _connectionClosed = false;
+
         const int WM_USER_SIMCONNECT = 0x0402;
         private bool SimConnectInitialized = false;
         //private SimConnect simconnect = null;
@@ -32,7 +35,7 @@ namespace SimFeedback.telemetry
             Version = Assembly.LoadFrom(Assembly.GetExecutingAssembly().Location).GetName().Version.ToString();
             BannerImage = @"img\banner_" + Name + ".png";
             IconImage = @"img\icon_" + Name + ".png";
-            TelemetryUpdateFrequency = 30;
+            TelemetryUpdateFrequency = 60;
         }
 
         public override string Name => "msfs2020";
@@ -79,27 +82,36 @@ namespace SimFeedback.telemetry
             {
                 if (RuntimePolicyHelper.LegacyV2RuntimeEnabledSuccessfully)
                 {
-                    LogDebug("Init SimConnect");
-                    _currProcess = Process.GetCurrentProcess();
-                    _mainWindowHandle = _currProcess.Handle;
-                    var simconnect = new SimConnect("SimFeedbackSimconnect", _mainWindowHandle, WM_USER_SIMCONNECT, null, 0);
+                    try
+                    {
+                        LogDebug("Init SimConnect");
+                        _currProcess = Process.GetCurrentProcess();
+                        _mainWindowHandle = _currProcess.Handle;
+                        var simconnect = new SimConnect("SimFeedbackSimconnect", _mainWindowHandle, WM_USER_SIMCONNECT, null, 0);
 
-                    simconnectx = simconnect;
-                    LogDebug("Got Simconnect and Handle " + _mainWindowHandle);
-                    // listen to connect and quit msgs
-                    simconnect.OnRecvOpen += new SimConnect.RecvOpenEventHandler(Simconnect_OnRecvOpen);
-                    simconnect.OnRecvQuit += new SimConnect.RecvQuitEventHandler(Simconnect_OnRecvQuit);
+                        simconnectx = simconnect;
+                        LogDebug("Got Simconnect and Handle " + _mainWindowHandle);
+                        // listen to connect and quit msgs
+                        simconnect.OnRecvOpen += new SimConnect.RecvOpenEventHandler(Simconnect_OnRecvOpen);
+                        simconnect.OnRecvQuit += new SimConnect.RecvQuitEventHandler(Simconnect_OnRecvQuit);
 
-                    // listen to exceptions
-                    simconnect.OnRecvException += Simconnect_OnRecvException;
+                        // listen to exceptions
+                        simconnect.OnRecvException += Simconnect_OnRecvException;
 
-                    simconnect.OnRecvSimobjectData += Simconnect_OnRecvSimobjectData;
-                    RegisterAircraftDataDefinition();
-                    RegisterFlightStatusDefinition();
+                        simconnect.OnRecvSimobjectData += Simconnect_OnRecvSimobjectData;
+                        RegisterAircraftDataDefinition();
+                        RegisterFlightStatusDefinition();
 
-                    simconnect.SubscribeToSystemEvent(EVENTS.POSITION_CHANGED, "PositionChanged");
-                    simconnect.OnRecvEvent += Simconnect_OnRecvEvent;
-                    LogDebug(Name + " Initialized");
+                        simconnect.SubscribeToSystemEvent(EVENTS.POSITION_CHANGED, "PositionChanged");
+                        simconnect.OnRecvEvent += Simconnect_OnRecvEvent;
+                        LogDebug(Name + " Initialized");
+                    }
+                    catch (Exception e)
+                    {
+                        LogDebug("Simconnect not ready...");
+                        SimConnectInitialized = false;
+                    }
+
                 }
                 else
                 {
@@ -108,7 +120,8 @@ namespace SimFeedback.telemetry
             }
             catch (Exception e)
             {
-                LogError("Could not change runtimePolicy..." + e.Message);
+                LogError("Could not change runtimePolicy - exception: " + e.Message);
+                SimConnectInitialized = false;
             }
         }
 
@@ -124,8 +137,6 @@ namespace SimFeedback.telemetry
                 
                 while (!_isStopped)
                 {
-
-                    
                     try
                     {
 
@@ -138,7 +149,7 @@ namespace SimFeedback.telemetry
                             var simconnect = simconnectx as SimConnect;
                             simconnect?.ReceiveMessage();
                             sw.Restart();
-                            Thread.Sleep(TelemetryUpdateFrequency);
+                            //Thread.Sleep(TelemetryUpdateFrequency);
                         }
 
                         if (sw.ElapsedMilliseconds > 500)
@@ -153,12 +164,17 @@ namespace SimFeedback.telemetry
                         IsRunning = false;
                         Thread.Sleep(1000);
                     }
-                    
+                }
+
+                if (!_connectionClosed)
+                {
+                    CloseConnection();
                 }
                 _definitionsAdded = false;
                 SimConnectInitialized = false;
                 IsConnected = false;
                 IsRunning = false;
+                _connectionClosed = false;
             }
             catch (Exception e)
             {
@@ -427,16 +443,16 @@ namespace SimFeedback.telemetry
 
         private void Simconnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
         {
-            // Must be general SimObject information
-            switch (data.dwRequestID)
+            try
             {
-                case (uint)DATA_REQUESTS.FLIGHT_STATUS:
-                    {
-                        var flightStatus = data.dwData[0] as FlightStatusStruct?;
-
-                        if (flightStatus.HasValue)
+                // Must be general SimObject information
+                switch (data.dwRequestID)
+                {
+                    case (uint)DATA_REQUESTS.FLIGHT_STATUS:
                         {
-                            try
+                            var flightStatus = data.dwData[0] as FlightStatusStruct?;
+
+                            if (flightStatus.HasValue)
                             {
                                 //object obj = data.dwData[0];
                                 //AircraftData acData = (AircraftData?)obj ?? default;
@@ -462,37 +478,44 @@ namespace SimFeedback.telemetry
                                 RaiseEvent(OnTelemetryUpdate, args);
                                 lastTelemetryData = telemetryData;
                             }
-                            catch (Exception e)
-                            {
-                                LogError(Name + "TelemetryProvider Exception while receiving data", e);
-                                IsConnected = false;
-                                IsRunning = false;
-                                Thread.Sleep(1000);
-                            }
                         }
-                    }
-                    break;
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                LogError(Name + "TelemetryProvider Exception while receiving data:" + e.Message);
+                IsConnected = false;
+                IsRunning = false;
+                Thread.Sleep(1000);
             }
         }
 
         void Simconnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data)
         {
-            LogDebug("OnRecvEvent dwID " + data.dwID + " uEventID " + data.uEventID);
-            switch ((SIMCONNECT_RECV_ID)data.dwID)
+            try
             {
-                case SIMCONNECT_RECV_ID.EVENT_FILENAME:
+                LogDebug("OnRecvEvent dwID " + data.dwID + " uEventID " + data.uEventID);
+                switch ((SIMCONNECT_RECV_ID)data.dwID)
+                {
+                    case SIMCONNECT_RECV_ID.EVENT_FILENAME:
 
-                    break;
-                case SIMCONNECT_RECV_ID.QUIT:
-                    LogDebug("Quit");
-                    break;
+                        break;
+                    case SIMCONNECT_RECV_ID.QUIT:
+                        LogDebug("Quit");
+                        break;
+                }
+
+                switch ((EVENTS)data.uEventID)
+                {
+                    case EVENTS.POSITION_CHANGED:
+                        LogDebug("Position changed");
+                        break;
+                }
             }
-
-            switch ((EVENTS)data.uEventID)
+            catch (Exception e)
             {
-                case EVENTS.POSITION_CHANGED:
-                    LogDebug("Position changed");
-                    break;
+                LogError(Name + "TelemetryProvider Exception while receiving event:" + e.Message);
             }
         }
 
@@ -526,6 +549,8 @@ namespace SimFeedback.telemetry
 
         public void CloseConnection()
         {
+            _connectionClosed = true;
+            LogDebug("CloseConnection");
             try
             {
                 cts?.Cancel();
@@ -540,14 +565,18 @@ namespace SimFeedback.telemetry
                 var simconnect = simconnectx as SimConnect;
                 if (simconnect != null)
                 {
+                    simconnect.OnRecvOpen -= new SimConnect.RecvOpenEventHandler(Simconnect_OnRecvOpen);
+                    simconnect.OnRecvQuit -= new SimConnect.RecvQuitEventHandler(Simconnect_OnRecvQuit);
+                    simconnect.OnRecvException -= Simconnect_OnRecvException;
+                    simconnect.OnRecvSimobjectData -= Simconnect_OnRecvSimobjectData;
                     // Dispose serves the same purpose as SimConnect_Close()
                     simconnect.Dispose();
-                    simconnect = null;
+                    _isStopped = true;
                 }
             }
             catch (Exception ex)
             {
-                LogError($"Cannot unsubscribe events! Error: {ex.Message}");
+                LogError("Cannot unsubscribe events! Error: " +ex.Message);
             }
             SimConnectInitialized = false;
         }
