@@ -5,7 +5,10 @@
     <ROW Property="AI_FINDEXE_TITLE" Value="Wöhle das Installationspaket für [|ProductName]" ValueLocId="AI.Property.FindExeTitle"/>
     <ROW Property="ALLUSERS" Value="1"/>
     <ROW Property="ARPCOMMENTS" Value="Diese Datenbank ist korrekt und enthält nötige Daten um [|ProductName] zu installieren." ValueLocId="*"/>
+    <ROW Property="ARPHELPLINK" Value="https://github.com/ashupp/MSFS2020TelemetryProvider"/>
     <ROW Property="ARPNOREPAIR" MultiBuildValue="DefaultBuild:1"/>
+    <ROW Property="ARPURLINFOABOUT" Value="https://github.com/ashupp/MSFS2020TelemetryProvider"/>
+    <ROW Property="ARPURLUPDATEINFO" Value="https://github.com/ashupp/MSFS2020TelemetryProvider"/>
     <ROW Property="Manufacturer" Value="ashnet GmbH"/>
     <ROW Property="ProductCode" Value="1031:{B93876E1-4519-4662-A821-EA7A2A6542AA} 1033:{B93876E1-4519-4662-A821-EA7A2A6542AA} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1031"/>
@@ -150,7 +153,7 @@
     <ROW Action="AI_ResolveKnownFolders" Type="1" Source="aicustact.dll" Target="AI_ResolveKnownFolders"/>
     <ROW Action="AI_SHOW_LOG" Type="65" Source="aicustact.dll" Target="LaunchLogFile" WithoutSeq="true"/>
     <ROW Action="AI_STORE_LOCATION" Type="51" Source="ARPINSTALLLOCATION" Target="[APPDIR]"/>
-    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]"/>
+    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[WindowsVolume]SELECT-YOUR-SIMFEEDBACK-DIRECTORY"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
   </COMPONENT>
