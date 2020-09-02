@@ -13,6 +13,6 @@ I am not responsible of any damages caused by usage of this plugin!
 
 ## Installation
 - Do not click on Download on this page. Download the file from the release tab or use the following link:
-  - [latest MSFS2020SimFeedbackTelemetryProviderSetup.exe](https://github.com/ashupp/MSFS2020TelemetryProvider/releases/latest/download/MSFS2020SimFeedbackTelemetryProviderSetup)    
+  - [latest MSFS2020SimFeedbackTelemetryProviderSetup.exe](https://github.com/ashupp/MSFS2020TelemetryProvider/releases/latest/download/MSFS2020SimFeedbackTelemetryProviderSetup.exe)    
 - Download and run installer
 - **Please select Simfeedback root folder as desired installation path**
