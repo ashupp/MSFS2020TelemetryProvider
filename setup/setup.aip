@@ -35,7 +35,6 @@
     <ROW Component="AI_ExePath" ComponentId="{20CA7209-9AC1-4C4E-8E61-8FADBD858720}" Directory_="APPDIR" Attributes="4" KeyPath="AI_ExePath"/>
     <ROW Component="APPDIR" ComponentId="{1CD1E543-8F41-4ADA-90A6-419876056412}" Directory_="APPDIR" Attributes="0"/>
     <ROW Component="MSFS2020TelemetryProvider.dll" ComponentId="{F7407B77-1CE4-4A99-B15A-F71A43A0241E}" Directory_="provider_Dir" Attributes="0" KeyPath="MSFS2020TelemetryProvider.dll"/>
-    <ROW Component="Microsoft.FlightSimulator.SimConnect.dll" ComponentId="{A80427DC-65E0-4D0C-918A-4A06B71591DA}" Directory_="APPDIR" Attributes="0" KeyPath="Microsoft.FlightSimulator.SimConnect.dll"/>
     <ROW Component="ProductInformation" ComponentId="{9E4C8CF3-31DC-4BAB-B9C5-4C7AAB258BBE}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
     <ROW Component="SimFeedbackStart.exe.config" ComponentId="{39C1A633-F6A9-4DDD-A23F-35C41DDD5FF6}" Directory_="APPDIR" Attributes="0" KeyPath="SimFeedbackStart.exe.config" Type="0"/>
     <ROW Component="banner_msfs2020.png" ComponentId="{A1904594-CE8B-4123-B3E4-E4FF311449AE}" Directory_="img_Dir" Attributes="0" KeyPath="banner_msfs2020.png" Type="0"/>
@@ -50,7 +49,6 @@
     <ROW File="msfs2020_MSFS2020__All_Planes.xml" Component_="msfs2020_MSFS2020__All_Planes.xml" FileName="MSFS20~1.XML|msfs2020_MSFS2020_-_All_Planes.xml" Attributes="0" SourcePath="..\bin\Release\profiles\msfs2020_MSFS2020_-_All_Planes.xml" SelfReg="false"/>
     <ROW File="banner_msfs2020.png" Component_="banner_msfs2020.png" FileName="BANNER~1.PNG|banner_msfs2020.png" Attributes="0" SourcePath="..\bin\Release\img\banner_msfs2020.png" SelfReg="false"/>
     <ROW File="icon_msfs2020.png" Component_="banner_msfs2020.png" FileName="ICON_M~1.PNG|icon_msfs2020.png" Attributes="0" SourcePath="..\bin\Release\img\icon_msfs2020.png" SelfReg="false"/>
-    <ROW File="Microsoft.FlightSimulator.SimConnect.dll" Component_="Microsoft.FlightSimulator.SimConnect.dll" FileName="MICROS~1.DLL|Microsoft.FlightSimulator.SimConnect.dll" Attributes="0" SourcePath="..\bin\Release\Microsoft.FlightSimulator.SimConnect.dll" SelfReg="false"/>
     <ROW File="SimFeedbackStart.exe.config" Component_="SimFeedbackStart.exe.config" FileName="SIMFEE~1.CON|SimFeedbackStart.exe.config" Attributes="0" SourcePath="..\bin\Release\SimFeedbackStart.exe.config" SelfReg="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BootstrOptComponent">
@@ -163,7 +161,6 @@
     <ROW Feature_="MainFeature" Component_="msfs2020_MSFS2020__All_Planes.xml"/>
     <ROW Feature_="MainFeature" Component_="AI_ExePath"/>
     <ROW Feature_="MainFeature" Component_="banner_msfs2020.png"/>
-    <ROW Feature_="MainFeature" Component_="Microsoft.FlightSimulator.SimConnect.dll"/>
     <ROW Feature_="MainFeature" Component_="SimFeedbackStart.exe.config"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
