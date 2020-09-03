@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Active="true" Name="MSFS2020 - All Planes" TelemetryProvider="msfs2020" OverallIntensity="50">
   <Author>ashupp / ashnet GmbH</Author>
-  <Version>v0.0.1.0</Version>
+  <Version>v0.0.5.0</Version>
   <Info>Baseline profile for Microsoft Flight Simulator 2020</Info>
   <BannerImage>img\banner_msfs2020.png</BannerImage>
   <ControllerConfigList>
@@ -68,11 +68,11 @@
             </Volume>
             <Frequency diffgr:id="Frequency1" msdata:rowOrder="0">
               <X>-60</X>
-              <Y>-25</Y>
+              <Y>25</Y>
             </Frequency>
             <Frequency diffgr:id="Frequency2" msdata:rowOrder="1">
               <X>60</X>
-              <Y>25</Y>
+              <Y>-25</Y>
             </Frequency>
           </DataSet>
         </diffgr:diffgram>
@@ -92,7 +92,7 @@
       <mute>false</mute>
       <smoothing>0</smoothing>
       <controller-id>1</controller-id>
-      <intensity>1</intensity>
+      <intensity>2</intensity>
       <ConfigDataSet>
         <xs:schema id="DataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
           <xs:element name="DataSet" msdata:IsDataSet="true" msdata:Locale="de-DE">
@@ -129,21 +129,29 @@
         <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
           <DataSet>
             <Volume diffgr:id="Volume1" msdata:rowOrder="0">
-              <X>-90</X>
+              <X>-60.36</X>
               <Y>0</Y>
             </Volume>
             <Volume diffgr:id="Volume2" msdata:rowOrder="1">
-              <X>90</X>
+              <X>59.917</X>
               <Y>0</Y>
             </Volume>
             <Frequency diffgr:id="Frequency1" msdata:rowOrder="0">
-              <X>-90</X>
-              <Y>100</Y>
-            </Frequency>
-            <Frequency diffgr:id="Frequency2" msdata:rowOrder="1">
-              <X>90</X>
+              <X>-60.36</X>
               <Y>-100</Y>
             </Frequency>
+            <Frequency diffgr:id="Frequency2" msdata:rowOrder="1">
+              <X>59.917</X>
+              <Y>100</Y>
+            </Frequency>
+            <Realtime diffgr:id="Realtime1" msdata:rowOrder="0">
+              <X>-90</X>
+              <Y>-100</Y>
+            </Realtime>
+            <Realtime diffgr:id="Realtime2" msdata:rowOrder="1">
+              <X>-26.653028665548565</X>
+              <Y>-100</Y>
+            </Realtime>
           </DataSet>
         </diffgr:diffgram>
       </ConfigDataSet>
@@ -162,7 +170,7 @@
       <mute>false</mute>
       <smoothing>0</smoothing>
       <controller-id>1</controller-id>
-      <intensity>1</intensity>
+      <intensity>2</intensity>
       <ConfigDataSet>
         <xs:schema id="DataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
           <xs:element name="DataSet" msdata:IsDataSet="true" msdata:Locale="de-DE">
@@ -208,11 +216,11 @@
             </Volume>
             <Frequency diffgr:id="Frequency1" msdata:rowOrder="0">
               <X>-90</X>
-              <Y>55</Y>
+              <Y>-55</Y>
             </Frequency>
             <Frequency diffgr:id="Frequency2" msdata:rowOrder="1">
               <X>90</X>
-              <Y>-55</Y>
+              <Y>55</Y>
             </Frequency>
           </DataSet>
         </diffgr:diffgram>
@@ -375,4 +383,4 @@
       </ConfigDataSet>
     </FeedbackEffect>
   </FeedbackEffectList>
-</Profile>
+</Profile>>
