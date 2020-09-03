@@ -13,6 +13,7 @@ namespace SimFeedback.telemetry
     {
         private bool _isStopped = true;
         private bool _connectionClosed = false;
+        private int _pause = 8;
 
         const int WM_USER_SIMCONNECT = 0x0402;
         private bool SimConnectInitialized = false;
@@ -35,7 +36,8 @@ namespace SimFeedback.telemetry
             Version = Assembly.LoadFrom(Assembly.GetExecutingAssembly().Location).GetName().Version.ToString();
             BannerImage = @"img\banner_" + Name + ".png";
             IconImage = @"img\icon_" + Name + ".png";
-            TelemetryUpdateFrequency = 60;
+            TelemetryUpdateFrequency = 120;
+            
         }
 
         public override string Name => "msfs2020";
@@ -149,7 +151,7 @@ namespace SimFeedback.telemetry
                             var simconnect = simconnectx as SimConnect;
                             simconnect?.ReceiveMessage();
                             sw.Restart();
-                            //Thread.Sleep(TelemetryUpdateFrequency);
+                            Thread.Sleep(_pause);
                         }
 
                         if (sw.ElapsedMilliseconds > 500)

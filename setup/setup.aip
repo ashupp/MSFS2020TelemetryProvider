@@ -9,10 +9,10 @@
     <ROW Property="ARPNOREPAIR" MultiBuildValue="DefaultBuild:1"/>
     <ROW Property="ARPURLINFOABOUT" Value="https://github.com/ashupp/MSFS2020TelemetryProvider"/>
     <ROW Property="Manufacturer" Value="ashnet GmbH"/>
-    <ROW Property="ProductCode" Value="1031:{C53390FF-B5A9-4F03-9105-A476AB22F742} 1033:{C53390FF-B5A9-4F03-9105-A476AB22F742} " Type="16"/>
+    <ROW Property="ProductCode" Value="1031:{D25D862F-7A2D-4E4E-9570-FC0E62A8AA79} 1033:{D25D862F-7A2D-4E4E-9570-FC0E62A8AA79} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1031"/>
     <ROW Property="ProductName" Value="MSFS2020 Telemetry Provider for SimFeedback"/>
-    <ROW Property="ProductVersion" Value="0.0.5.0" Type="32"/>
+    <ROW Property="ProductVersion" Value="0.0.6.0" Type="32"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND;AI_SETUPEXEPATH;SETUPEXEDIR"/>
     <ROW Property="UpgradeCode" Value="{A554A606-8B70-4FCB-8FE4-8165455A2128}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
