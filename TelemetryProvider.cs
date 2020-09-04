@@ -284,11 +284,11 @@ namespace SimFeedback.telemetry
             if (simconnect != null)
             {
                 simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
-                "SIMULATION RATE",
-                "number",
-                SIMCONNECT_DATATYPE.INT32,
-                0.0f,
-                SimConnect.SIMCONNECT_UNUSED);
+                    "SIMULATION RATE",
+                    "number",
+                    SIMCONNECT_DATATYPE.INT32,
+                    0.0f,
+                    SimConnect.SIMCONNECT_UNUSED);
 
                 simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "ACCELERATION BODY X",
@@ -382,6 +382,13 @@ namespace SimFeedback.telemetry
                     SimConnect.SIMCONNECT_UNUSED);
 
                 simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                    "AIRSPEED TRUE",
+                    "Knots",
+                    SIMCONNECT_DATATYPE.FLOAT32,
+                    0.0f,
+                    SimConnect.SIMCONNECT_UNUSED);
+
+                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "VERTICAL SPEED",
                     "Feet per minute",
                     SIMCONNECT_DATATYPE.FLOAT32,
@@ -465,7 +472,8 @@ namespace SimFeedback.telemetry
                                     Speed = flightStatus.Value.GroundSpeed,
                                     RPM = flightStatus.Value.RPM,
                                     AngleOfAttack = flightStatus.Value.AngleOfAttack,
-                                    AngleOfSideslip = flightStatus.Value.AngleOfSideslip
+                                    AngleOfSideslip = flightStatus.Value.AngleOfSideslip,
+                                    AirSpeedTrue = flightStatus.Value.AirSpeedTrue
                                 };
 
                                 IsConnected = true;

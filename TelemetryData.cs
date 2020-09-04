@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.IO;
+using System.Runtime.InteropServices;
 using Math = System.Math;
 
 namespace SimFeedback.telemetry
@@ -59,6 +60,7 @@ namespace SimFeedback.telemetry
         public float GroundAltitude;
         public float GroundSpeed;
         public float IndicatedAirSpeed;
+        public float AirSpeedTrue;
         public float VerticalSpeed;
 
         public float WindVelocity;
@@ -111,7 +113,7 @@ namespace SimFeedback.telemetry
 
         public float Pitch
         {
-            get => LoopAngle(ConvertRadiansToDegrees((float)(Math.Cos(_roll) * Math.Sin(_pitch))), 90);
+            get => ConvertRadiansToDegrees((float)Math.Sin(_pitch));
             set => _pitch = value;
         }
 
@@ -123,7 +125,7 @@ namespace SimFeedback.telemetry
 
         public float Roll
         {
-            get => LoopAngle(ConvertRadiansToDegrees((float) (Math.Cos(_pitch) * Math.Sin(_roll))), 90);
+            get => ConvertRadiansToDegrees((float)(Math.Cos(_pitch) * Math.Sin(_roll)));
             set => _roll = value;
         }
 
@@ -134,16 +136,23 @@ namespace SimFeedback.telemetry
         public float RollSpeed { get; set; }
         public float YawSpeed { get; set; }
         public float PitchSpeed { get; set; }
+        public float AirSpeedTrue { get; set; }
 
         public float RPM
         {
-            get => _rpm / 100;
+            get => _rpm / 100 * 16;
             set => _rpm = value;
         }
 
         public float AngleOfAttack
         {
             get => ConvertRadiansToDegrees(_angleOfAttack);
+            set => _angleOfAttack = value;
+        }
+
+        public float AngleOfAttackSmoothed
+        {
+            get => ConvertRadiansToDegrees((float)Math.Sin(_angleOfAttack/180 * 3.14159265359) * Math.Min(1, AirSpeedTrue / 30 ));
             set => _angleOfAttack = value;
         }
 
