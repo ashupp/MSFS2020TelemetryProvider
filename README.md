@@ -16,3 +16,10 @@ I am not responsible of any damages caused by usage of this plugin!
   - [latest MSFS2020SimFeedbackTelemetryProviderSetup.exe](https://github.com/ashupp/MSFS2020TelemetryProvider/releases/latest/download/MSFS2020SimFeedbackTelemetryProviderSetup.exe)    
 - Download and run installer
 - **Please select Simfeedback root folder as desired installation path**
+
+## Configuration / Stuttering of motion
+First make sure you are running the newest version of MSFS2020.  
+If you are encountering stuttering of the rig or of the sim you can try to reduce the TelemetryUpdateFrequency
+in the configuration file next to the telemetryprovider.dll.  
+"MSFS2020TelemetryProvider.dll.config".
+Try a setting of 60 and try to set AutoCalculateRateLimiter to "False".
