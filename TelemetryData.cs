@@ -46,10 +46,6 @@ namespace SimFeedback.telemetry
         //public float SimTime;
         public int SimRate;
 
-        public float Latitude;
-        public float Longitude;
-        public float Altitude;
-        public float AltitudeAboveGround;
         public float xAccel;
         public float yAccel;
         public float zAccel;
@@ -65,22 +61,13 @@ namespace SimFeedback.telemetry
         public float IndicatedAirSpeed;
         public float VerticalSpeed;
 
-        public float FuelTotalQuantity;
-
         public float WindVelocity;
         public float WindDirection;
 
         public float RPM;
 
-        public int IsOnGround;
-        public int StallWarning;
-        public int OverspeedWarning;
-
-        public int IsAutopilotOn;
-
-        public int Transponder;
-        public int Com1;
-        public int Com2;
+        public float AngleOfAttack;
+        public float AngleOfSideslip;
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -116,13 +103,15 @@ namespace SimFeedback.telemetry
         private float _roll;
         private float _yaw;
         private float _rpm;
+        private float _angleOfAttack;
+        private float _angleOfSideslip;
         #endregion
 
         #region For SimFeedback Available Values
 
         public float Pitch
         {
-            get => LoopAngle(ConvertRadiansToDegrees(_pitch),90);
+            get => LoopAngle(ConvertRadiansToDegrees((float)(Math.Cos(_roll) * Math.Sin(_pitch))), 90);
             set => _pitch = value;
         }
 
@@ -134,7 +123,7 @@ namespace SimFeedback.telemetry
 
         public float Roll
         {
-            get => LoopAngle(ConvertRadiansToDegrees(_roll), 90);
+            get => LoopAngle(ConvertRadiansToDegrees((float) (Math.Cos(_pitch) * Math.Sin(_roll))), 90);
             set => _roll = value;
         }
 
@@ -150,6 +139,18 @@ namespace SimFeedback.telemetry
         {
             get => _rpm / 100;
             set => _rpm = value;
+        }
+
+        public float AngleOfAttack
+        {
+            get => ConvertRadiansToDegrees(_angleOfAttack);
+            set => _angleOfAttack = value;
+        }
+
+        public float AngleOfSideslip
+        {
+            get => ConvertRadiansToDegrees(_angleOfSideslip);
+            set => _angleOfSideslip = value;
         }
 
         #endregion
