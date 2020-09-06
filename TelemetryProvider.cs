@@ -22,7 +22,7 @@ namespace SimFeedback.telemetry
         private bool _simConnectInitialized;
         private CancellationTokenSource _cts;
         private Thread _t;
-        private Object _simconnectx;
+        private SimConnect _simconnect;
         private TelemetryData _lastTelemetryData;
         private IntPtr _mainWindowHandle;
 
@@ -93,17 +93,16 @@ namespace SimFeedback.telemetry
                         LogDebug("Init SimConnect");
                         var currProcess = Process.GetCurrentProcess();
                         _mainWindowHandle = currProcess.Handle;
-                        var simconnect = new SimConnect("SimFeedbackSimconnect", _mainWindowHandle, WM_USER_SIMCONNECT, null, 0);
+                        _simconnect = new SimConnect("SimFeedbackSimconnect", _mainWindowHandle, WM_USER_SIMCONNECT, null, 0);
 
-                        _simconnectx = simconnect;
                         LogDebug("Got Simconnect and Handle " + _mainWindowHandle);
                         // listen to connect and quit msgs
-                        simconnect.OnRecvOpen += Simconnect_OnRecvOpen;
-                        simconnect.OnRecvQuit += Simconnect_OnRecvQuit;
+                        _simconnect.OnRecvOpen += Simconnect_OnRecvOpen;
+                        _simconnect.OnRecvQuit += Simconnect_OnRecvQuit;
 
                         // listen to exceptions
-                        simconnect.OnRecvException += Simconnect_OnRecvException;
-                        simconnect.OnRecvSimobjectData += Simconnect_OnRecvSimobjectData;
+                        _simconnect.OnRecvException += Simconnect_OnRecvException;
+                        _simconnect.OnRecvSimobjectData += Simconnect_OnRecvSimobjectData;
                         RegisterFlightStatusDefinition();
                         LogDebug(Name + " Initialized");
                     }
@@ -146,8 +145,7 @@ namespace SimFeedback.telemetry
                         }
                         else
                         {
-                            var simconnect = _simconnectx as SimConnect;
-                            simconnect?.ReceiveMessage();
+                            _simconnect?.ReceiveMessage();
 
                             if (_autoCalculateRateLimiter)
                             {
@@ -205,15 +203,14 @@ namespace SimFeedback.telemetry
             }
             try
             {
-                var simconnect = _simconnectx as SimConnect;
-                if (simconnect != null)
+                if (_simconnect != null)
                 {
-                    simconnect.OnRecvOpen -= Simconnect_OnRecvOpen;
-                    simconnect.OnRecvQuit -= Simconnect_OnRecvQuit;
-                    simconnect.OnRecvException -= Simconnect_OnRecvException;
-                    simconnect.OnRecvSimobjectData -= Simconnect_OnRecvSimobjectData;
+                    _simconnect.OnRecvOpen -= Simconnect_OnRecvOpen;
+                    _simconnect.OnRecvQuit -= Simconnect_OnRecvQuit;
+                    _simconnect.OnRecvException -= Simconnect_OnRecvException;
+                    _simconnect.OnRecvSimobjectData -= Simconnect_OnRecvSimobjectData;
                     // Dispose serves the same purpose as SimConnect_Close()
-                    simconnect.Dispose();
+                    _simconnect.Dispose();
                     _isStopped = true;
                 }
             }
@@ -230,149 +227,148 @@ namespace SimFeedback.telemetry
 
         private void RegisterFlightStatusDefinition()
         {
-            var simconnect = _simconnectx as SimConnect;
-            if (simconnect != null)
+            if (_simconnect != null)
             {
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "SIMULATION RATE",
                     "number",
                     SIMCONNECT_DATATYPE.INT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "ACCELERATION BODY X",
                     "Feet per second squared",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "ACCELERATION BODY Y",
                     "Feet per second squared",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "ACCELERATION BODY Z",
                     "Feet per second squared",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "ROTATION VELOCITY BODY X",
                     "Feet per second",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "ROTATION VELOCITY BODY Y",
                     "Feet per second",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "ROTATION VELOCITY BODY Z",
                     "Feet per second",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "PLANE PITCH DEGREES",
                     "Radians",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "PLANE BANK DEGREES",
                     "Radians",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "PLANE HEADING DEGREES TRUE",
                     "Degrees",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "PLANE HEADING DEGREES MAGNETIC",
                     "Degrees",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "GROUND ALTITUDE",
                     "Meters",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "GROUND VELOCITY",
                     "Knots",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "AIRSPEED INDICATED",
                     "Knots",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "AIRSPEED TRUE",
                     "Knots",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "VERTICAL SPEED",
                     "Feet per minute",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "AMBIENT WIND VELOCITY",
                     "Feet per second",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "AMBIENT WIND DIRECTION",
                     "Degrees",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "GENERAL ENG RPM:1",
                     "Degrees",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "INCIDENCE ALPHA",
                     "Radians",
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
-                simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
+                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "INCIDENCE BETA",
                     "Radians",
                     SIMCONNECT_DATATYPE.FLOAT32,
@@ -381,7 +377,7 @@ namespace SimFeedback.telemetry
 
                 // IMPORTANT: register it with the simconnect managed wrapper marshaller
                 // if you skip this step, you will only receive a uint in the .dwData field.
-                simconnect.RegisterDataDefineStruct<FlightStatusStruct>(DEFINITIONS.FlightStatus);
+                _simconnect.RegisterDataDefineStruct<FlightStatusStruct>(DEFINITIONS.FlightStatus);
             }
             else
             {
@@ -440,10 +436,9 @@ namespace SimFeedback.telemetry
         private void Simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
         {
             LogDebug("Connected to Flight Simulator");
-            var simconnect = _simconnectx as SimConnect;
-            if (simconnect != null)
+            if (_simconnect != null)
             {
-                simconnect.RequestDataOnSimObject(DATA_REQUESTS.FLIGHT_STATUS, DEFINITIONS.FlightStatus, 0, SIMCONNECT_PERIOD.SIM_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
+                _simconnect.RequestDataOnSimObject(DATA_REQUESTS.FLIGHT_STATUS, DEFINITIONS.FlightStatus, 0, SIMCONNECT_PERIOD.SIM_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
             }
             else
             {
