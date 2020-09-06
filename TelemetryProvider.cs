@@ -159,14 +159,11 @@ namespace SimFeedback.telemetry
                                 Thread.Sleep(_fixedRateLimiter);
                             }
 
+                            if (sw.ElapsedMilliseconds > 500)
+                            {
+                                IsRunning = false;
+                            }
                             sw.Restart();
-
-                        
-                        }
-
-                        if (sw.ElapsedMilliseconds > 500)
-                        {
-                            IsRunning = false;
                         }
                     }
                     catch (Exception e)
