@@ -1,44 +1,18 @@
-﻿using System.IO;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using Math = System.Math;
 
 namespace SimFeedback.telemetry
 {
+    # region Simconnect Enums ans Structs
 
     enum DEFINITIONS
     {
-        AircraftData,
         FlightStatus
     }
 
     internal enum DATA_REQUESTS
     {
-        NONE,
-        SUBSCRIBE_GENERIC,
-        AIRCRAFT_DATA,
         FLIGHT_STATUS,
-        ENVIRONMENT_DATA,
-        FLIGHT_PLAN
-    }
-
-    internal enum EVENTS
-    {
-        CONNECTED,
-        MESSAGE_RECEIVED,
-        POSITION_CHANGED
-    }
-
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    struct AircraftDataStruct2
-    {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-        public string Type;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-        public string Model;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Title;
-        public double EstimatedCruiseSpeed;
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -72,31 +46,8 @@ namespace SimFeedback.telemetry
         public float AngleOfSideslip;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct AircraftDataStruct
-    {
-        /*public float xAccel;
 
-        public float yAccel;
-
-        public float zAccel;
-
-        public float xVelocity;
-
-        public float yVelocity;
-
-        public float zVelocity;*/
-
-        public float pitch;
-
-        public float roll;
-
-        /*public float yaw;
-
-        public float Speed;
-
-        public float RPM;*/
-    }
+    #endregion
 
     public struct TelemetryData
     {

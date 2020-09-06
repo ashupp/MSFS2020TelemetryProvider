@@ -44,7 +44,7 @@ namespace SimFeedback.telemetry
         public override void Init(ILogger logger)
         {
             base.Init(logger);
-            Log("Initializing " + Name + "TelemetryProvider");
+            Log("Initializing " + Name + "TelemetryProvider " + Version);
             LogDebug("TelemetryUpdateFrequency: " + TelemetryUpdateFrequency);
             LogDebug("SamplePeriod: " + SamplePeriod);
             LogDebug("AutoCalculateRateLimiter: " + _autoCalculateRateLimiter);
@@ -103,13 +103,8 @@ namespace SimFeedback.telemetry
 
                         // listen to exceptions
                         simconnect.OnRecvException += Simconnect_OnRecvException;
-
                         simconnect.OnRecvSimobjectData += Simconnect_OnRecvSimobjectData;
-                        RegisterAircraftDataDefinition();
                         RegisterFlightStatusDefinition();
-
-                        simconnect.SubscribeToSystemEvent(EVENTS.POSITION_CHANGED, "PositionChanged");
-                        simconnect.OnRecvEvent += Simconnect_OnRecvEvent;
                         LogDebug(Name + " Initialized");
                     }
                     catch (Exception e)
@@ -235,48 +230,6 @@ namespace SimFeedback.telemetry
         #endregion
 
         #region Simconnect register data definitions
-
-        private void RegisterAircraftDataDefinition()
-        {
-            var simconnect = _simconnectx as SimConnect;
-            if (simconnect != null) {
-                simconnect.AddToDataDefinition(DEFINITIONS.AircraftData,
-                    "ATC TYPE",
-                    null,
-                    SIMCONNECT_DATATYPE.STRING32,
-                    0.0f,
-                    SimConnect.SIMCONNECT_UNUSED);
-
-                simconnect.AddToDataDefinition(DEFINITIONS.AircraftData,
-                    "ATC MODEL",
-                    null,
-                    SIMCONNECT_DATATYPE.STRING32,
-                    0.0f,
-                    SimConnect.SIMCONNECT_UNUSED);
-
-                simconnect.AddToDataDefinition(DEFINITIONS.AircraftData,
-                    "Title",
-                    null,
-                    SIMCONNECT_DATATYPE.STRING256,
-                    0.0f,
-                    SimConnect.SIMCONNECT_UNUSED);
-
-                simconnect.AddToDataDefinition(DEFINITIONS.AircraftData,
-                    "ESTIMATED CRUISE SPEED",
-                    "Knots",
-                    SIMCONNECT_DATATYPE.FLOAT32,
-                    0.0f,
-                    SimConnect.SIMCONNECT_UNUSED);
-
-                // IMPORTANT: register it with the simconnect managed wrapper marshaller
-                // if you skip this step, you will only receive a uint in the .dwData field.
-                simconnect.RegisterDataDefineStruct<AircraftDataStruct>(DEFINITIONS.AircraftData);
-            }
-            else
-            {
-                LogError("RegisterAircraftDataDefinition: Simconnect not ready");
-            }
-        }
 
         private void RegisterFlightStatusDefinition()
         {
@@ -448,43 +401,34 @@ namespace SimFeedback.telemetry
             try
             {
                 // Must be general SimObject information
-                switch (data.dwRequestID)
+                if (data.dwRequestID == (uint) DATA_REQUESTS.FLIGHT_STATUS)
                 {
-                    case (uint)DATA_REQUESTS.FLIGHT_STATUS:
-                        {
-                            var flightStatus = data.dwData[0] as FlightStatusStruct?;
+                    var flightStatus = data.dwData[0] as FlightStatusStruct?;
 
-                            if (flightStatus.HasValue)
-                            {
-                                //object obj = data.dwData[0];
-                                //AircraftData acData = (AircraftData?)obj ?? default;
-                                TelemetryData telemetryData = new TelemetryData
-                                {
-                                    Pitch = flightStatus.Value.Pitch,
-                                    Roll = flightStatus.Value.Bank,
-                                    Yaw = flightStatus.Value.Yaw,
-                                    Surge = flightStatus.Value.zAccel,
-                                    Sway = flightStatus.Value.xAccel,
-                                    Heave = flightStatus.Value.yAccel,
-                                    RollSpeed = flightStatus.Value.zVelocity,
-                                    YawSpeed = flightStatus.Value.yVelocity,
-                                    PitchSpeed = flightStatus.Value.xVelocity,
-                                    Speed = flightStatus.Value.GroundSpeed,
-                                    RPM = flightStatus.Value.RPM,
-                                    AngleOfAttack = flightStatus.Value.AngleOfAttack,
-                                    AngleOfSideslip = flightStatus.Value.AngleOfSideslip,
-                                    AirSpeedTrue = flightStatus.Value.AirSpeedTrue
-                                };
+                    if (!flightStatus.HasValue) return;
+                    TelemetryData telemetryData = new TelemetryData
+                    {
+                        Pitch = flightStatus.Value.Pitch,
+                        Roll = flightStatus.Value.Bank,
+                        Yaw = flightStatus.Value.Yaw,
+                        Surge = flightStatus.Value.zAccel,
+                        Sway = flightStatus.Value.xAccel,
+                        Heave = flightStatus.Value.yAccel,
+                        RollSpeed = flightStatus.Value.zVelocity,
+                        YawSpeed = flightStatus.Value.yVelocity,
+                        PitchSpeed = flightStatus.Value.xVelocity,
+                        Speed = flightStatus.Value.GroundSpeed,
+                        RPM = flightStatus.Value.RPM,
+                        AngleOfAttack = flightStatus.Value.AngleOfAttack,
+                        AngleOfSideslip = flightStatus.Value.AngleOfSideslip,
+                        AirSpeedTrue = flightStatus.Value.AirSpeedTrue
+                    };
 
-                                IsConnected = true;
-                                IsRunning = true;
+                    IsConnected = true;
+                    IsRunning = true;
 
-                                TelemetryEventArgs args = new TelemetryEventArgs(new TelemetryInfoElem(telemetryData, _lastTelemetryData));
-                                RaiseEvent(OnTelemetryUpdate, args);
-                                _lastTelemetryData = telemetryData;
-                            }
-                        }
-                        break;
+                    TelemetryEventArgs args = new TelemetryEventArgs(new TelemetryInfoElem(telemetryData, _lastTelemetryData)); RaiseEvent(OnTelemetryUpdate, args);
+                    _lastTelemetryData = telemetryData;
                 }
             }
             catch (Exception e)
@@ -495,35 +439,7 @@ namespace SimFeedback.telemetry
                 Thread.Sleep(1000);
             }
         }
-       
-        private void Simconnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data)
-        {
-            try
-            {
-                LogDebug("OnRecvEvent dwID " + data.dwID + " uEventID " + data.uEventID);
-                switch ((SIMCONNECT_RECV_ID)data.dwID)
-                {
-                    case SIMCONNECT_RECV_ID.EVENT_FILENAME:
-
-                        break;
-                    case SIMCONNECT_RECV_ID.QUIT:
-                        LogDebug("Quit");
-                        break;
-                }
-
-                switch ((EVENTS)data.uEventID)
-                {
-                    case EVENTS.POSITION_CHANGED:
-                        LogDebug("Position changed");
-                        break;
-                }
-            }
-            catch (Exception e)
-            {
-                LogError(Name + "TelemetryProvider Exception while receiving event:" + e.Message);
-            }
-        }
-
+        
         private void Simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
         {
             LogDebug("Connected to Flight Simulator");
@@ -550,14 +466,6 @@ namespace SimFeedback.telemetry
         private void Simconnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
         {
             LogError("Exception received: {error} " +  (SIMCONNECT_EXCEPTION)data.dwException);
-        }
-
-        private void RecoverFromError(Exception exception)
-        {
-            // 0xC000014B: CTD
-            // 0xC00000B0: Sim has exited
-            LogDebug("Exception received " + exception.Message);
-            CloseConnection();
         }
 
         #endregion
