@@ -113,6 +113,12 @@ namespace SimFeedback.telemetry
             set => _angleOfSideslip = value;
         }
 
+        public float AngleOfSideslipSmoothed
+        {
+            get => ConvertRadiansToDegrees((float)Math.Sin(_angleOfSideslip / 180 * 3.14159265359) * Math.Min(1, AirSpeedTrue / 30));
+            set => _angleOfSideslip = value;
+        }
+
         #endregion
 
         #region Conversion calculations
