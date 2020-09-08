@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -27,7 +27,10 @@ namespace MSFS2020DataProxy
         private TelemetryData _lastTelemetryData;
         private IntPtr _mainWindowHandle;
         private UdpClient udpClient;
-
+        private Stopwatch sw = new Stopwatch();
+        private bool swStarted;
+        private const int maxRequestCount = 100;
+        private int dataCounter = 0;
 
 
         public event EventHandler DataAvailable;
@@ -71,6 +74,9 @@ namespace MSFS2020DataProxy
 
 
                     Console.WriteLine(" Initialized");
+
+                    
+                    
                 }
                 catch (Exception e)
                 {
@@ -89,12 +95,6 @@ namespace MSFS2020DataProxy
         {
             if (_simconnect != null)
             {
-                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
-                    "SIMULATION RATE",
-                    "number",
-                    SIMCONNECT_DATATYPE.INT32,
-                    0.0f,
-                    SimConnect.SIMCONNECT_UNUSED);
 
                 _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "ACCELERATION BODY X",
@@ -117,6 +117,7 @@ namespace MSFS2020DataProxy
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
 
+                /*
                 _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "ROTATION VELOCITY BODY X",
                     "Feet per second",
@@ -234,7 +235,7 @@ namespace MSFS2020DataProxy
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
-
+                */
                 // IMPORTANT: register it with the simconnect managed wrapper marshaller
                 // if you skip this step, you will only receive a uint in the .dwData field.
                 _simconnect.RegisterDataDefineStruct<FlightStatusStruct>(DEFINITIONS.FlightStatus);
@@ -254,13 +255,30 @@ namespace MSFS2020DataProxy
                 // Must be general SimObject information
                 if (data.dwRequestID == (uint)DATA_REQUESTS.FLIGHT_STATUS)
                 {
+
+
                     var flightStatus = data.dwData[0] as FlightStatusStruct?;
 
                     if (!flightStatus.HasValue) return;
 
+                    if (!swStarted)
+                    {
+                        swStarted = true;
+                        sw.Start();
+                    }
+
+                    if (dataCounter < maxRequestCount)
+                    {
+                        dataCounter++;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Req/Sec: {0}", 1000.0 / (sw.ElapsedMilliseconds / maxRequestCount * 1.0));
+                        Environment.Exit(0);
+                    }
                     // Daten per UDP senden
 
-                    
+
                     TelemetryData telemetryData = new TelemetryData
                     {
                         Pitch = flightStatus.Value.Pitch,

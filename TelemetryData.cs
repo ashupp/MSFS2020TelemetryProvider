@@ -18,9 +18,6 @@ namespace SimFeedback.telemetry
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     struct FlightStatusStruct
     {
-        //public float SimTime;
-        public int SimRate;
-
         public float xAccel;
         public float yAccel;
         public float zAccel;
