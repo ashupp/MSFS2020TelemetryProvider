@@ -31,5 +31,32 @@ namespace SimFeedback.telemetry.Properties {
                 return ((int)(this["TelemetryUpdateFrequency"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AutoCalculateRateLimiter {
+            get {
+                return ((bool)(this["AutoCalculateRateLimiter"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DisableRateThrottle {
+            get {
+                return ((bool)(this["DisableRateThrottle"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowProxyWindow {
+            get {
+                return ((bool)(this["ShowProxyWindow"]));
+            }
+        }
     }
 }

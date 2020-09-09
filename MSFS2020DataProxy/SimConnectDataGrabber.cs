@@ -23,6 +23,7 @@ namespace MSFS2020DataProxy
         private readonly int _telemetryUpdateFrequency = Settings.Default.TelemetryUpdateFrequency;
         private readonly int _fixedRateLimiter = 1000 / Settings.Default.TelemetryUpdateFrequency;
         private readonly bool _autoCalculateRateLimiter = Settings.Default.AutoCalculateRateLimiter;
+        private readonly bool _disableRateThrottle = Settings.Default.DisableRateThrottle;
 
         private const int WM_USER_SIMCONNECT = 0x0402;
         public bool IsSimConnectInitialized;
@@ -45,7 +46,11 @@ namespace MSFS2020DataProxy
 
         public void InitializeSimConnect()
         {
-            Console.WriteLine(" InitializeSimConnect");
+            Console.WriteLine(" InitializeSimConnect Proxy");
+            Console.WriteLine("AutoCalculateRateLimiter: " + _autoCalculateRateLimiter);
+            Console.WriteLine("FixedRateLimiter: " + _fixedRateLimiter);
+            Console.WriteLine("DisableRateThrottle: " + _disableRateThrottle);
+
             IsSimConnectInitialized = true;
 
             try
@@ -289,6 +294,21 @@ namespace MSFS2020DataProxy
                     {
                         Console.WriteLine(e.ToString());
                     }
+
+
+                    if (!_disableRateThrottle)
+                    {
+                        if (_autoCalculateRateLimiter)
+                        {
+                            var sleepMs = (int)(1000 / _telemetryUpdateFrequency - _sw.ElapsedMilliseconds);
+                            if (sleepMs > 0) Thread.Sleep(sleepMs);
+                        }
+                        else
+                        {
+                            Thread.Sleep(_fixedRateLimiter);
+                        }
+                    }
+                    _sw.Restart();
                 }
             }
             catch (Exception e)
@@ -362,16 +382,6 @@ namespace MSFS2020DataProxy
         public void GetData()
         {
             _simconnect?.ReceiveMessage();
-            if (_autoCalculateRateLimiter)
-            {
-                var sleepMs = (int)(1000 / _telemetryUpdateFrequency - _sw.ElapsedMilliseconds);
-                if (sleepMs > 0) Thread.Sleep(sleepMs);
-            }
-            else
-            {
-                Thread.Sleep(_fixedRateLimiter);
-            }
-            _sw.Restart();
         }
     }
 }

@@ -16,6 +16,12 @@ namespace SimFeedback.telemetry
     {
         #region Members
 
+        private readonly int _telemetryUpdateFrequency = Settings.Default.TelemetryUpdateFrequency;
+        private readonly int _fixedRateLimiter = 1000 / Settings.Default.TelemetryUpdateFrequency;
+        private readonly bool _autoCalculateRateLimiter = Settings.Default.AutoCalculateRateLimiter;
+        private readonly bool _disableRateThrottle = Settings.Default.DisableRateThrottle;
+        private readonly bool _showProxyWindow = Settings.Default.ShowProxyWindow;
+
         private bool _isStopped = true;
 
         private Thread _t;
@@ -46,6 +52,9 @@ namespace SimFeedback.telemetry
             Log("Initializing " + Name + "TelemetryProvider " + Version);
             LogDebug("TelemetryUpdateFrequency: " + TelemetryUpdateFrequency);
             LogDebug("SamplePeriod: " + SamplePeriod);
+            LogDebug("AutoCalculateRateLimiter: " + _autoCalculateRateLimiter);
+            LogDebug("FixedRateLimiter: " + _fixedRateLimiter);
+            LogDebug("DisableRateThrottle: " + _disableRateThrottle);
         }
 
         public override string[] GetValueList()
@@ -81,15 +90,14 @@ namespace SimFeedback.telemetry
                 var proxyPath = Path.Combine(proxyDir,"MSFS2020DataProxy.exe");
 
                 LogDebug("proxy path: " + proxyPath);
-                var startInfo = new ProcessStartInfo(proxyPath)
-                {
-                    WorkingDirectory = proxyDir,
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    RedirectStandardError = true,
-                    RedirectStandardInput = true,
-                    RedirectStandardOutput = true
-                };
+                var startInfo = new ProcessStartInfo(proxyPath);
+                startInfo.WorkingDirectory = proxyDir;
+                startInfo.CreateNoWindow = !_showProxyWindow;
+                startInfo.UseShellExecute = false;
+                startInfo.RedirectStandardError = !_showProxyWindow;
+                startInfo.RedirectStandardInput = !_showProxyWindow;
+                startInfo.RedirectStandardOutput = !_showProxyWindow;
+
                 _proxyProcess = Process.Start(startInfo);
                 if (_proxyProcess != null)
                 {
@@ -170,6 +178,19 @@ namespace SimFeedback.telemetry
                     TelemetryEventArgs args = new TelemetryEventArgs(new TelemetryInfoElem(telemetryData, _lastTelemetryData));
                     RaiseEvent(OnTelemetryUpdate, args);
                     _lastTelemetryData = telemetryData;
+
+                    if (!_disableRateThrottle)
+                    {
+                        if (_autoCalculateRateLimiter)
+                        {
+                            var sleepMs = (int)(1000 / _telemetryUpdateFrequency - sw.ElapsedMilliseconds);
+                            if (sleepMs > 0) Thread.Sleep(sleepMs);
+                        }
+                        else
+                        {
+                            Thread.Sleep(_fixedRateLimiter);
+                        }
+                    }
                     sw.Restart();
 
                 }

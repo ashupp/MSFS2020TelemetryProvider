@@ -40,5 +40,14 @@ namespace MSFS2020DataProxy.Properties {
                 return ((bool)(this["AutoCalculateRateLimiter"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DisableRateThrottle {
+            get {
+                return ((bool)(this["DisableRateThrottle"]));
+            }
+        }
     }
 }
