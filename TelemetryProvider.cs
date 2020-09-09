@@ -1,4 +1,5 @@
 using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -8,7 +9,6 @@ using System.Text;
 using System.Threading;
 using Newtonsoft.Json;
 using SimFeedback.log;
-using SimFeedback.telemetry.Properties;
 
 namespace SimFeedback.telemetry
 {
@@ -16,11 +16,11 @@ namespace SimFeedback.telemetry
     {
         #region Members
 
-        private readonly int _telemetryUpdateFrequency = Settings.Default.TelemetryUpdateFrequency;
-        private readonly int _fixedRateLimiter = 1000 / Settings.Default.TelemetryUpdateFrequency;
-        private readonly bool _autoCalculateRateLimiter = Settings.Default.AutoCalculateRateLimiter;
-        private readonly bool _disableRateThrottle = Settings.Default.DisableRateThrottle;
-        private readonly bool _showProxyWindow = Settings.Default.ShowProxyWindow;
+        private int _telemetryUpdateFrequency;
+        private int _fixedRateLimiter;
+        private bool _autoCalculateRateLimiter;
+        private bool _disableRateThrottle;
+        private bool _showProxyWindow;
 
         private bool _isStopped = true;
 
@@ -37,11 +37,11 @@ namespace SimFeedback.telemetry
 
         public TelemetryProvider()
         {
+
             Author = "ashupp / ashnet GmbH";
             Version = Assembly.LoadFrom(Assembly.GetExecutingAssembly().Location).GetName().Version.ToString();
             BannerImage = @"img\banner_" + Name + ".png";
             IconImage = @"img\icon_" + Name + ".png";
-            TelemetryUpdateFrequency = Settings.Default.TelemetryUpdateFrequency;
         }
 
         public override string Name => "msfs2020";
@@ -49,12 +49,29 @@ namespace SimFeedback.telemetry
         public override void Init(ILogger logger)
         {
             base.Init(logger);
+
+            ExeConfigurationFileMap map = new ExeConfigurationFileMap();
+            map.ExeConfigFilename = Assembly.GetExecutingAssembly().Location + ".config";
+
+            Configuration libConfig = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
+            AppSettingsSection section = (libConfig.GetSection("appSettings") as AppSettingsSection);
+            if (section != null)
+            {
+                _telemetryUpdateFrequency = Convert.ToInt32(section.Settings["TelemetryUpdateFrequency"].Value);
+                TelemetryUpdateFrequency = _telemetryUpdateFrequency;
+                _fixedRateLimiter = 1000 / _telemetryUpdateFrequency;
+                _autoCalculateRateLimiter = Convert.ToBoolean(section.Settings["AutoCalculateRateLimiter"].Value);
+                _disableRateThrottle = Convert.ToBoolean(section.Settings["DisableRateThrottle"].Value);
+                _showProxyWindow = Convert.ToBoolean(section.Settings["ShowProxyWindow"].Value);
+            }
+
             Log("Initializing " + Name + "TelemetryProvider " + Version);
             LogDebug("TelemetryUpdateFrequency: " + TelemetryUpdateFrequency);
             LogDebug("SamplePeriod: " + SamplePeriod);
             LogDebug("AutoCalculateRateLimiter: " + _autoCalculateRateLimiter);
             LogDebug("FixedRateLimiter: " + _fixedRateLimiter);
             LogDebug("DisableRateThrottle: " + _disableRateThrottle);
+            LogDebug("Show Proxy Window: " + _showProxyWindow);
         }
 
         public override string[] GetValueList()
@@ -93,7 +110,7 @@ namespace SimFeedback.telemetry
                 var startInfo = new ProcessStartInfo(proxyPath);
                 startInfo.WorkingDirectory = proxyDir;
                 startInfo.CreateNoWindow = !_showProxyWindow;
-                startInfo.UseShellExecute = false;
+                startInfo.UseShellExecute = _showProxyWindow;
                 startInfo.RedirectStandardError = !_showProxyWindow;
                 startInfo.RedirectStandardInput = !_showProxyWindow;
                 startInfo.RedirectStandardOutput = !_showProxyWindow;
@@ -206,7 +223,7 @@ namespace SimFeedback.telemetry
             if (_proxyRunning)
             {
                 Log("Stopping Proxy");
-                _proxyProcess?.CloseMainWindow();
+                _proxyProcess?.Kill();
             }
             else
             {
