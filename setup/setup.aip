@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<DOCUMENT Type="Advanced Installer" CreateVersion="17.3" version="17.4" Modules="enterprise" RootPath="." Language="de" Id="{B7E35BEE-D939-4D5B-A629-5C60922FDAEC}">
+<DOCUMENT Type="Advanced Installer" CreateVersion="17.3" version="17.4.1" Modules="enterprise" RootPath="." Language="de" Id="{B7E35BEE-D939-4D5B-A629-5C60922FDAEC}">
   <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
     <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
     <ROW Property="AI_FINDEXE_TITLE" Value="Wöhle das Installationspaket für [|ProductName]" ValueLocId="AI.Property.FindExeTitle"/>
@@ -9,10 +9,10 @@
     <ROW Property="ARPNOREPAIR" MultiBuildValue="DefaultBuild:1"/>
     <ROW Property="ARPURLINFOABOUT" Value="https://github.com/ashupp/MSFS2020TelemetryProvider"/>
     <ROW Property="Manufacturer" Value="ashnet GmbH"/>
-    <ROW Property="ProductCode" Value="1031:{ECA80AEE-E884-408B-8FAF-4A0170D8B32A} 1033:{ECA80AEE-E884-408B-8FAF-4A0170D8B32A} " Type="16"/>
+    <ROW Property="ProductCode" Value="1031:{CD43F904-C127-42ED-BCBB-2E1EDE8CF6CC} 1033:{CD43F904-C127-42ED-BCBB-2E1EDE8CF6CC} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1031"/>
     <ROW Property="ProductName" Value="MSFS2020 Telemetry Provider for SimFeedback"/>
-    <ROW Property="ProductVersion" Value="0.0.10.0" Type="32"/>
+    <ROW Property="ProductVersion" Value="1.0.1.0" Type="32"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND;AI_SETUPEXEPATH;SETUPEXEDIR"/>
     <ROW Property="UpgradeCode" Value="{A554A606-8B70-4FCB-8FE4-8165455A2128}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
@@ -26,6 +26,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
     <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
+    <ROW Directory="NeuesVerzeichnis_Dir" Directory_Parent="provider_Dir" DefaultDir="MSFS20~1|MSFS2020TelemetryProviderProxy"/>
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
     <ROW Directory="img_Dir" Directory_Parent="APPDIR" DefaultDir="img"/>
     <ROW Directory="profiles_Dir" Directory_Parent="APPDIR" DefaultDir="profiles"/>
@@ -34,10 +35,12 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
     <ROW Component="AI_ExePath" ComponentId="{20CA7209-9AC1-4C4E-8E61-8FADBD858720}" Directory_="APPDIR" Attributes="4" KeyPath="AI_ExePath"/>
     <ROW Component="APPDIR" ComponentId="{1CD1E543-8F41-4ADA-90A6-419876056412}" Directory_="APPDIR" Attributes="0"/>
+    <ROW Component="MSFS2020DataProxy.exe" ComponentId="{C1F34E7A-9E74-4EAC-8BF4-E5D28DFCBEAE}" Directory_="NeuesVerzeichnis_Dir" Attributes="256" KeyPath="MSFS2020DataProxy.exe"/>
+    <ROW Component="MSFS2020DataProxy.exe.config" ComponentId="{3CF720D3-B314-45D4-A1E7-91DE209A669F}" Directory_="NeuesVerzeichnis_Dir" Attributes="0" KeyPath="MSFS2020DataProxy.exe.config" Type="0"/>
     <ROW Component="MSFS2020TelemetryProvider.dll" ComponentId="{F7407B77-1CE4-4A99-B15A-F71A43A0241E}" Directory_="provider_Dir" Attributes="0" KeyPath="MSFS2020TelemetryProvider.dll"/>
     <ROW Component="MSFS2020TelemetryProvider.dll.config" ComponentId="{658571ED-62F3-45B6-A606-D8D1B3684512}" Directory_="provider_Dir" Attributes="0" KeyPath="MSFS2020TelemetryProvider.dll.config" Type="0"/>
     <ROW Component="ProductInformation" ComponentId="{9E4C8CF3-31DC-4BAB-B9C5-4C7AAB258BBE}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
-    <ROW Component="SimFeedbackStart.exe.config" ComponentId="{39C1A633-F6A9-4DDD-A23F-35C41DDD5FF6}" Directory_="APPDIR" Attributes="0" KeyPath="SimFeedbackStart.exe.config" Type="0"/>
+    <ROW Component="SimConnect.dll" ComponentId="{DAA43E92-026D-478B-800D-17E9D34539B4}" Directory_="NeuesVerzeichnis_Dir" Attributes="256" KeyPath="SimConnect.dll"/>
     <ROW Component="banner_msfs2020.png" ComponentId="{A1904594-CE8B-4123-B3E4-E4FF311449AE}" Directory_="img_Dir" Attributes="0" KeyPath="banner_msfs2020.png" Type="0"/>
     <ROW Component="msfs2020_MSFS2020__All_Planes.xml" ComponentId="{03F9CD22-CB31-4E80-B805-F065B4BCEF30}" Directory_="profiles_Dir" Attributes="0" KeyPath="msfs2020_MSFS2020__All_Planes.xml" Type="0"/>
   </COMPONENT>
@@ -50,8 +53,11 @@
     <ROW File="msfs2020_MSFS2020__All_Planes.xml" Component_="msfs2020_MSFS2020__All_Planes.xml" FileName="MSFS20~1.XML|msfs2020_MSFS2020_-_All_Planes.xml" Attributes="0" SourcePath="..\bin\Release\profiles\msfs2020_MSFS2020_-_All_Planes.xml" SelfReg="false"/>
     <ROW File="banner_msfs2020.png" Component_="banner_msfs2020.png" FileName="BANNER~1.PNG|banner_msfs2020.png" Attributes="0" SourcePath="..\bin\Release\img\banner_msfs2020.png" SelfReg="false"/>
     <ROW File="icon_msfs2020.png" Component_="banner_msfs2020.png" FileName="ICON_M~1.PNG|icon_msfs2020.png" Attributes="0" SourcePath="..\bin\Release\img\icon_msfs2020.png" SelfReg="false"/>
-    <ROW File="SimFeedbackStart.exe.config" Component_="SimFeedbackStart.exe.config" FileName="SIMFEE~1.CON|SimFeedbackStart.exe.config" Attributes="0" SourcePath="..\bin\Release\SimFeedbackStart.exe.config" SelfReg="false"/>
     <ROW File="MSFS2020TelemetryProvider.dll.config" Component_="MSFS2020TelemetryProvider.dll.config" FileName="MSFS20~1.CON|MSFS2020TelemetryProvider.dll.config" Attributes="0" SourcePath="..\bin\Release\provider\MSFS2020TelemetryProvider.dll.config" SelfReg="false"/>
+    <ROW File="MSFS2020DataProxy.exe" Component_="MSFS2020DataProxy.exe" FileName="MSFS20~1.EXE|MSFS2020DataProxy.exe" Attributes="0" SourcePath="..\MSFS2020DataProxy\bin\Release\MSFS2020DataProxy.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="MSFS2020DataProxy.exe.config" Component_="MSFS2020DataProxy.exe.config" FileName="MSFS20~1.CON|MSFS2020DataProxy.exe.config" Attributes="0" SourcePath="..\MSFS2020DataProxy\bin\Release\MSFS2020DataProxy.exe.config" SelfReg="false"/>
+    <ROW File="SimConnect.dll" Component_="SimConnect.dll" FileName="SIMCON~1.DLL|SimConnect.dll" Attributes="0" SourcePath="..\MSFS2020DataProxy\bin\Release\SimConnect.dll" SelfReg="false"/>
+    <ROW File="SimConnect.lib" Component_="MSFS2020DataProxy.exe.config" FileName="SIMCON~1.LIB|SimConnect.lib" Attributes="0" SourcePath="..\MSFS2020DataProxy\bin\Release\SimConnect.lib" SelfReg="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.AiPersistentDataComponent">
     <ROW PersistentRow="msfs2020_MSFS2020__All_Planes.xml" Type="0" Condition="1"/>
@@ -180,8 +186,10 @@
     <ROW Feature_="MainFeature" Component_="msfs2020_MSFS2020__All_Planes.xml"/>
     <ROW Feature_="MainFeature" Component_="AI_ExePath"/>
     <ROW Feature_="MainFeature" Component_="banner_msfs2020.png"/>
-    <ROW Feature_="MainFeature" Component_="SimFeedbackStart.exe.config"/>
     <ROW Feature_="MainFeature" Component_="MSFS2020TelemetryProvider.dll.config"/>
+    <ROW Feature_="MainFeature" Component_="MSFS2020DataProxy.exe.config"/>
+    <ROW Feature_="MainFeature" Component_="MSFS2020DataProxy.exe"/>
+    <ROW Feature_="MainFeature" Component_="SimConnect.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>

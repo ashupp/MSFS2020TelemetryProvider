@@ -18,9 +18,6 @@ namespace SimFeedback.telemetry
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     struct FlightStatusStruct
     {
-        //public float SimTime;
-        public int SimRate;
-
         public float xAccel;
         public float yAccel;
         public float zAccel;
@@ -97,19 +94,13 @@ namespace SimFeedback.telemetry
 
         public float AngleOfAttack
         {
-            get => ConvertRadiansToDegrees(_angleOfAttack);
-            set => _angleOfAttack = value;
-        }
-
-        public float AngleOfAttackSmoothed
-        {
-            get => ConvertRadiansToDegrees((float)Math.Sin(_angleOfAttack/180 * 3.14159265359) * Math.Min(1, AirSpeedTrue / 30 ));
+            get => (float)Math.Sin(_angleOfAttack / 180 * 3.14159265359) * Math.Min(1, AirSpeedTrue / 30);
             set => _angleOfAttack = value;
         }
 
         public float AngleOfSideslip
         {
-            get => ConvertRadiansToDegrees(_angleOfSideslip);
+            get => (float)Math.Sin(_angleOfSideslip / 180 * 3.14159265359) * Math.Min(1, AirSpeedTrue / 30);
             set => _angleOfSideslip = value;
         }
 

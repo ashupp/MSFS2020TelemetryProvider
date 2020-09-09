@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
@@ -16,18 +17,11 @@ namespace SimFeedback.telemetry
         #region Members
 
         private bool _isStopped = true;
-        private bool _connectionClosed;
 
-        private readonly int _fixedRateLimiter = 1000 / Settings.Default.TelemetryUpdateFrequency;
-        private readonly bool _autoCalculateRateLimiter = Settings.Default.AutoCalculateRateLimiter;
-
-        private const int WM_USER_SIMCONNECT = 0x0402;
-        private bool _simConnectInitialized;
-        private CancellationTokenSource _cts;
         private Thread _t;
+        private bool _proxyRunning;
+        private Process _proxyProcess;
         private TelemetryData _lastTelemetryData;
-        private IntPtr _mainWindowHandle;
-
         private const int _portNum = 55280;
         private const string _ipAddr = "127.0.0.1";
 
@@ -52,8 +46,6 @@ namespace SimFeedback.telemetry
             Log("Initializing " + Name + "TelemetryProvider " + Version);
             LogDebug("TelemetryUpdateFrequency: " + TelemetryUpdateFrequency);
             LogDebug("SamplePeriod: " + SamplePeriod);
-            LogDebug("AutoCalculateRateLimiter: " + _autoCalculateRateLimiter);
-            LogDebug("FixedRateLimiter: " + _fixedRateLimiter);
         }
 
         public override string[] GetValueList()
@@ -80,6 +72,61 @@ namespace SimFeedback.telemetry
             }
         }
 
+        private void TryStartProxy()
+        {
+            try
+            {
+                _proxyRunning = true;
+                var proxyDir = Path.Combine(Directory.GetCurrentDirectory(), "provider", "MSFS2020TelemetryProviderProxy");
+                var proxyPath = Path.Combine(proxyDir,"MSFS2020DataProxy.exe");
+
+                LogDebug("proxy path: " + proxyPath);
+                var startInfo = new ProcessStartInfo(proxyPath)
+                {
+                    WorkingDirectory = proxyDir,
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    RedirectStandardError = true,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true
+                };
+                _proxyProcess = Process.Start(startInfo);
+                if (_proxyProcess != null)
+                {
+                    _proxyProcess.EnableRaisingEvents = true;
+                    _proxyProcess.ErrorDataReceived += _proxyProcess_ErrorDataReceived;
+                    _proxyProcess.OutputDataReceived += _proxyProcess_OutputDataReceived;
+                    _proxyProcess.Exited += Proc_Exited;
+                    
+                }
+            }
+            catch (Exception e)
+            {
+                LogError("ProxyHelper: Exception: " + e.Message);
+            }
+        }
+
+        private void _proxyProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            Log("ProxyHelper OutputDataReceived: " + e.Data);
+        }
+
+        private void _proxyProcess_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            Log("ProxyHelper ErrorDataReceived: " + e.Data);
+        }
+
+        private void Proc_Exited(object sender, EventArgs e)
+        {
+            Log("ProxyHelper Exited - Exit Code: " + _proxyProcess.ExitCode);
+            _proxyProcess.Exited -= Proc_Exited;
+            _proxyProcess.ErrorDataReceived -= _proxyProcess_ErrorDataReceived;
+            _proxyProcess.OutputDataReceived -= _proxyProcess_OutputDataReceived;
+            _proxyProcess.Dispose();
+            _proxyRunning = false;
+        }
+
+
         #endregion
 
         #region Private methods 
@@ -88,7 +135,6 @@ namespace SimFeedback.telemetry
         private void Run()
         {
             _lastTelemetryData = new TelemetryData();
-
             UdpClient socket = new UdpClient { ExclusiveAddressUse = false };
             socket.Client.Bind(new IPEndPoint(IPAddress.Parse(_ipAddr), _portNum));
             var endpoint = new IPEndPoint(IPAddress.Parse(_ipAddr), _portNum);
@@ -98,6 +144,11 @@ namespace SimFeedback.telemetry
             {
                 try
                 {
+                    if (!_proxyRunning)
+                    {
+                        _proxyRunning = true;
+                        TryStartProxy();
+                    }
 
                     // get data from game, 
                     if (socket.Available == 0)
@@ -130,9 +181,22 @@ namespace SimFeedback.telemetry
                     Thread.Sleep(1000);
                 }
             }
+
+            if (_proxyRunning)
+            {
+                Log("Stopping Proxy");
+                _proxyProcess?.CloseMainWindow();
+            }
+            else
+            {
+                Log("Proxy not running...");
+            }
+            socket.Dispose();
+            _proxyProcess?.Dispose();
             sw.Stop();
             IsConnected = false;
             IsRunning = false;
+            _proxyRunning = false;
         }
         #endregion
     }

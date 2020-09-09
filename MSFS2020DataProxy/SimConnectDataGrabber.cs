@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.FlightSimulator.SimConnect;
+using MSFS2020DataProxy.Properties;
 using Newtonsoft.Json;
 using SimFeedback.telemetry;
 
@@ -16,17 +17,21 @@ namespace MSFS2020DataProxy
 {
     class SimConnectDataGrabber
     {
-        private bool _isStopped = true;
+            private bool _isStopped = true;
         private bool _connectionClosed;
+
+        private readonly int _telemetryUpdateFrequency = Settings.Default.TelemetryUpdateFrequency;
+        private readonly int _fixedRateLimiter = 1000 / Settings.Default.TelemetryUpdateFrequency;
+        private readonly bool _autoCalculateRateLimiter = Settings.Default.AutoCalculateRateLimiter;
 
         private const int WM_USER_SIMCONNECT = 0x0402;
         public bool IsSimConnectInitialized;
         private CancellationTokenSource _cts;
         private Thread _t;
         private SimConnect _simconnect;
-        private TelemetryData _lastTelemetryData;
         private IntPtr _mainWindowHandle;
         private UdpClient udpClient;
+        private Stopwatch _sw;
 
 
 
@@ -71,6 +76,8 @@ namespace MSFS2020DataProxy
 
 
                     Console.WriteLine(" Initialized");
+                    _sw = new Stopwatch();
+                    _sw.Start();
                 }
                 catch (Exception e)
                 {
@@ -89,13 +96,6 @@ namespace MSFS2020DataProxy
         {
             if (_simconnect != null)
             {
-                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
-                    "SIMULATION RATE",
-                    "number",
-                    SIMCONNECT_DATATYPE.INT32,
-                    0.0f,
-                    SimConnect.SIMCONNECT_UNUSED);
-
                 _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "ACCELERATION BODY X",
                     "Feet per second squared",
@@ -280,10 +280,6 @@ namespace MSFS2020DataProxy
                     };
 
                     string jsonString = JsonConvert.SerializeObject(telemetryData);
-
-                    //Console.WriteLine(jsonString);
-
-           
                     Byte[] sendBytes = Encoding.ASCII.GetBytes(jsonString);
                     try
                     {
@@ -366,6 +362,16 @@ namespace MSFS2020DataProxy
         public void GetData()
         {
             _simconnect?.ReceiveMessage();
+            if (_autoCalculateRateLimiter)
+            {
+                var sleepMs = (int)(1000 / _telemetryUpdateFrequency - _sw.ElapsedMilliseconds);
+                if (sleepMs > 0) Thread.Sleep(sleepMs);
+            }
+            else
+            {
+                Thread.Sleep(_fixedRateLimiter);
+            }
+            _sw.Restart();
         }
     }
 }

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SimFeedback.telemetry.Properties {
+namespace MSFS2020DataProxy.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -29,6 +29,15 @@ namespace SimFeedback.telemetry.Properties {
         public int TelemetryUpdateFrequency {
             get {
                 return ((int)(this["TelemetryUpdateFrequency"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AutoCalculateRateLimiter {
+            get {
+                return ((bool)(this["AutoCalculateRateLimiter"]));
             }
         }
     }
