@@ -18,9 +18,6 @@ namespace SimFeedback.telemetry
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     struct FlightStatusStruct
     {
-        //public float SimTime;
-        public int SimRate;
-
         public float xAccel;
         public float yAccel;
         public float zAccel;
@@ -31,9 +28,6 @@ namespace SimFeedback.telemetry
         public float Bank;
         public float Yaw;
         public float MagneticHeading;
-        public float GroundAltitude;
-        public float GroundSpeed;
-        public float IndicatedAirSpeed;
         public float AirSpeedTrue;
         public float VerticalSpeed;
 
@@ -83,7 +77,6 @@ namespace SimFeedback.telemetry
         public float Heave { get; set; }
         public float Sway { get; set; }
         public float Surge { get; set; }
-        public float Speed { get; set; }
         public float RollSpeed { get; set; }
         public float YawSpeed { get; set; }
         public float PitchSpeed { get; set; }
@@ -97,13 +90,13 @@ namespace SimFeedback.telemetry
 
         public float AngleOfAttack
         {
-            get => (float)Math.Sin(_angleOfAttack / 180 * 3.14159265359) * Math.Min(1, AirSpeedTrue / 30);
+            get => (float)(Math.Sin(_angleOfAttack) * Math.Min(1, AirSpeedTrue / 30));
             set => _angleOfAttack = value;
         }
 
         public float AngleOfSideslip
         {
-            get => (float)Math.Sin(_angleOfSideslip / 180 * 3.14159265359) * Math.Min(1, AirSpeedTrue / 30);
+            get => (float)(Math.Sin(_angleOfSideslip) * Math.Min(1, AirSpeedTrue / 30));
             set => _angleOfSideslip = value;
         }
 

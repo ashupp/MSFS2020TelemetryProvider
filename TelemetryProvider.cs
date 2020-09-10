@@ -1,10 +1,10 @@
 using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using Microsoft.FlightSimulator.SimConnect;
 using SimFeedback.log;
-using SimFeedback.telemetry.Properties;
 
 namespace SimFeedback.telemetry
 {
@@ -15,8 +15,10 @@ namespace SimFeedback.telemetry
         private bool _isStopped = true;
         private bool _connectionClosed;
 
-        private readonly int _fixedRateLimiter = 1000 / Settings.Default.TelemetryUpdateFrequency;
-        private readonly bool _autoCalculateRateLimiter = Settings.Default.AutoCalculateRateLimiter;
+        private int _telemetryUpdateFrequency;
+        private int _fixedRateLimiter;
+        private bool _autoCalculateRateLimiter;
+        private bool _disableRateThrottle;
 
         private const int WM_USER_SIMCONNECT = 0x0402;
         private bool _simConnectInitialized;
@@ -36,7 +38,6 @@ namespace SimFeedback.telemetry
             Version = Assembly.LoadFrom(Assembly.GetExecutingAssembly().Location).GetName().Version.ToString();
             BannerImage = @"img\banner_" + Name + ".png";
             IconImage = @"img\icon_" + Name + ".png";
-            TelemetryUpdateFrequency = Settings.Default.TelemetryUpdateFrequency;
         }
 
         public override string Name => "msfs2020";
@@ -45,10 +46,26 @@ namespace SimFeedback.telemetry
         {
             base.Init(logger);
             Log("Initializing " + Name + "TelemetryProvider " + Version);
+
+            ExeConfigurationFileMap map = new ExeConfigurationFileMap();
+            map.ExeConfigFilename = Assembly.GetExecutingAssembly().Location + ".config";
+
+            Configuration libConfig = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
+            AppSettingsSection section = (libConfig.GetSection("appSettings") as AppSettingsSection);
+            if (section != null)
+            {
+                _telemetryUpdateFrequency = Convert.ToInt32(section.Settings["TelemetryUpdateFrequency"].Value);
+                TelemetryUpdateFrequency = _telemetryUpdateFrequency;
+                _fixedRateLimiter = 1000 / _telemetryUpdateFrequency;
+                _autoCalculateRateLimiter = Convert.ToBoolean(section.Settings["AutoCalculateRateLimiter"].Value);
+                _disableRateThrottle = Convert.ToBoolean(section.Settings["DisableRateThrottle"].Value);
+            }
+
             LogDebug("TelemetryUpdateFrequency: " + TelemetryUpdateFrequency);
             LogDebug("SamplePeriod: " + SamplePeriod);
             LogDebug("AutoCalculateRateLimiter: " + _autoCalculateRateLimiter);
             LogDebug("FixedRateLimiter: " + _fixedRateLimiter);
+            LogDebug("DisableRateThrottle: " + _disableRateThrottle);
         }
 
         public override string[] GetValueList()
@@ -147,19 +164,21 @@ namespace SimFeedback.telemetry
                         {
                             _simconnect?.ReceiveMessage();
 
-                            if (_autoCalculateRateLimiter)
-                            {
-                                var sleepMs = (int)(1000 / TelemetryUpdateFrequency - sw.ElapsedMilliseconds);
-                                if (sleepMs > 0) Thread.Sleep(sleepMs);
-                            }
-                            else
-                            {
-                                Thread.Sleep(_fixedRateLimiter);
-                            }
+                            if(!_disableRateThrottle){
+                                if (_autoCalculateRateLimiter)
+                                {
+                                    var sleepMs = (int)(1000 / TelemetryUpdateFrequency - sw.ElapsedMilliseconds);
+                                    if (sleepMs > 0) Thread.Sleep(sleepMs);
+                                }
+                                else
+                                {
+                                    Thread.Sleep(_fixedRateLimiter);
+                                }
 
-                            if (sw.ElapsedMilliseconds > 500)
-                            {
-                                IsRunning = false;
+                                if (sw.ElapsedMilliseconds > 500)
+                                {
+                                    IsRunning = false;
+                                }
                             }
                             sw.Restart();
                         }
@@ -229,13 +248,6 @@ namespace SimFeedback.telemetry
         {
             if (_simconnect != null)
             {
-                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
-                    "SIMULATION RATE",
-                    "number",
-                    SIMCONNECT_DATATYPE.INT32,
-                    0.0f,
-                    SimConnect.SIMCONNECT_UNUSED);
-
                 _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "ACCELERATION BODY X",
                     "Feet per second squared",
@@ -307,27 +319,6 @@ namespace SimFeedback.telemetry
                     SimConnect.SIMCONNECT_UNUSED);
 
                 _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
-                    "GROUND ALTITUDE",
-                    "Meters",
-                    SIMCONNECT_DATATYPE.FLOAT32,
-                    0.0f,
-                    SimConnect.SIMCONNECT_UNUSED);
-
-                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
-                    "GROUND VELOCITY",
-                    "Knots",
-                    SIMCONNECT_DATATYPE.FLOAT32,
-                    0.0f,
-                    SimConnect.SIMCONNECT_UNUSED);
-
-                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
-                    "AIRSPEED INDICATED",
-                    "Knots",
-                    SIMCONNECT_DATATYPE.FLOAT32,
-                    0.0f,
-                    SimConnect.SIMCONNECT_UNUSED);
-
-                _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "AIRSPEED TRUE",
                     "Knots",
                     SIMCONNECT_DATATYPE.FLOAT32,
@@ -347,6 +338,7 @@ namespace SimFeedback.telemetry
                     SIMCONNECT_DATATYPE.FLOAT32,
                     0.0f,
                     SimConnect.SIMCONNECT_UNUSED);
+
                 _simconnect.AddToDataDefinition(DEFINITIONS.FlightStatus,
                     "AMBIENT WIND DIRECTION",
                     "Degrees",
@@ -410,7 +402,6 @@ namespace SimFeedback.telemetry
                         RollSpeed = flightStatus.Value.zVelocity,
                         YawSpeed = flightStatus.Value.yVelocity,
                         PitchSpeed = flightStatus.Value.xVelocity,
-                        Speed = flightStatus.Value.GroundSpeed,
                         RPM = flightStatus.Value.RPM,
                         AngleOfAttack = flightStatus.Value.AngleOfAttack,
                         AngleOfSideslip = flightStatus.Value.AngleOfSideslip,
